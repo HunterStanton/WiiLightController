@@ -108,6 +108,7 @@ int main(int argc, char **argv) {
             {
                 // Toggle the light
                 WIILIGHT_Toggle();
+                WIILIGHT_SetLevel(wiiLightBrightness);
                 
                 wiiLightIsOn = true;
                 printf(GREEN "Turned on Wii Light!\n" WHITE);
