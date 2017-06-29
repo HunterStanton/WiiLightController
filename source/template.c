@@ -58,8 +58,11 @@ int main(int argc, char **argv) {
     // Initialize Wii Light stuff
     void WIILIGHT_Init();
     
+    WIILIGHT_SetLevel(0);
+    WIILIGHT_TurnOn();
+    
     // Variables to store current Wii DVD light state
-    bool wiiLightIsOn = false;
+    bool wiiLightIsOn = true;
     int wiiLightBrightness = 0;
 
 
@@ -67,27 +70,35 @@ int main(int argc, char **argv) {
 	
     
 
-
+    // Run this code every single frame/vertical sync
 	while(1) {
 
-		// Call WPAD_ScanPads each loop, this reads the latest controller states
+		// Scan the user input
 		WPAD_ScanPads();
 
-		// WPAD_ButtonsDown tells us which buttons were pressed in this loop
-		// this is a "one shot" state which will not fire again until the button has been released
+		// Check which buttons are actually being pressed
 		u32 pressed = WPAD_ButtonsDown(0);
 
 		// Return to HBC
         if ( pressed & WPAD_BUTTON_HOME )
         {
+            // Notify the user their session is about to end
             printf(WHITE "Returning to launcher!\n");
             printf(WHITE "Goodbye!\n");
+            
+            // Turn off the DVD light to make certain that it doesn't somehow stay on when back at the HBC
+            WIILIGHT_TurnOff();
+            
+            // Sleep for 3 seconds
             sleep(3);
+            
+            // Exit back to loader
             exit(0);
         }
         
         if (pressed & WPAD_BUTTON_B )
         {
+            // Clear the screen and print basic usage info
             ResetScreen();
         }
         
@@ -95,21 +106,17 @@ int main(int argc, char **argv) {
         {
             if(!wiiLightIsOn)
             {
-                // Turn on the light
-                void WIILIGHT_TurnOn();
+                // Toggle the light
+                WIILIGHT_Toggle();
+                
                 wiiLightIsOn = true;
                 printf(GREEN "Turned on Wii Light!\n" WHITE);
             }
             else
             {
-                // Set the brightness to 0 before turning off
-                WIILIGHT_SetLevel(0);
+                // Toggle the light
+                WIILIGHT_Toggle();
                 
-                // Turn off the light
-                void WIILIGHT_TurnOff();
-                
-                // Update our brightness variable
-                wiiLightBrightness = 0;
                 wiiLightIsOn = false;
                 printf(RED "Turned off Wii Light!\n" WHITE);
             }
@@ -119,6 +126,7 @@ int main(int argc, char **argv) {
         {
             if(wiiLightIsOn)
             {
+                // Inform the user about the current brightness
                 printf(WHITE "Wii Light is " GREEN "ON" WHITE " and it's brightness is %i\n", wiiLightBrightness);
             }
             else
@@ -149,7 +157,7 @@ int main(int argc, char **argv) {
             }
         }
 
-		// Wait for the next frame
+		// Wait for vertical sync, ensuring that the loop only runs once per frame
 		VIDEO_WaitVSync();
 	}
 
