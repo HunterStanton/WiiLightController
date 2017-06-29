@@ -14,7 +14,7 @@ static GXRModeObj *rmode = NULL;
 
 void ResetScreen()
 {
-    // Clears the screen
+    // Clears the screen and prints basic info about usage
     printf("\x1b[2J");
     printf(YELLOW "Wii Light Controller\nAllows you to turn on the Wii DVD drive light and control it's brightness.\n2017 Hunter Stanton\n------------------------------------\nControls:\nPress 1 to Turn on the DVD Light\nPress 2 to get current status of DVD light\nPress DPAD UP to turn brightness of DVD light up\nPress DPAD DOWN to turn brightness of DVD light down\nPress B to clear the screen\nPress HOME to return to loader\n" WHITE);
 }
@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
     // Initialize Wii Light stuff
     void WIILIGHT_Init();
     
+    // Variables to store current Wii DVD light state
     bool wiiLightIsOn = false;
     int wiiLightBrightness = 0;
 
